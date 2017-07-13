@@ -29,11 +29,11 @@ shinyUI(fluidPage(
                 #
                 tabPanel("Overview", h4(p("How to use this App")),
                          
-                         p("Imagine you have a list of keywords, say 'customer', 'brand' etc., which you want to search every instance of in a corpus. And not just that, you want to also collect some context around each keyword's occurence by examining a few words on either side of the keyword. Now you can use Ctrl + F and lookup the words but if you want these context laden text chunks all inone place, then this app can help.", align = "justify")
+                         p("Imagine you have a list of keywords, say 'customer', 'brand' etc., which you want to search every instance of in a corpus. And not just that, you want to also collect some context around each keyword's occurence by examining a few words on either side of the keyword. Now you can use Ctrl + F and lookup the words but if you want these context laden text chunks all inone place, then this app can help.", align = "justify"),
                          
                          p("To use this app you'll need a few things: [1] A document corpus to search in, in .txt file format. Make sure each document is 
                            separated from another document with a new line character. [2] A keywords list again as a .txt file. Each Key Word should be separated by a new line. 
-                           [3] Alternately, enter oen or more keywords separated by commas in the second input textbox (in left side bar panel).", align = "justify")
+                           [3] Alternately, enter oen or more keywords separated by commas in the second input textbox (in left side bar panel).", align = "justify"),
     
                           p(" Note: You can download the sample files from the 'Example dataset' tab and see how the app works. Also you can enter the keywords in left side bar panel. If you are 
                            entering keywords in the left side bar panel, than each key word should be separated by comma (,) 
