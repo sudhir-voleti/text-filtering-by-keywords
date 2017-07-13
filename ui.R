@@ -23,7 +23,7 @@ shinyUI(fluidPage(
     tags$b("And/Or"),
    
     br(),
-    textInput("keywords2",('Enter key words seperated by comma (,)'),value = '')
+    textInput("keywords2",('Enter key words seperated by comma (,)'),value = ''),
    
     br(),    
     numericInput("num", 
