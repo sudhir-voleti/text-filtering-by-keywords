@@ -90,7 +90,7 @@ sentence = reactive({
   # chunk_collect = vector("list", nrow(a1))
   chunk_collect = data_frame(word = rep("a", nrow(a1)))
   # sentence1 = vector("list", nrow(a1))
-  sentence1 = matrix(0, nrow(a1), 2)	
+  # sentence1 = matrix(0, nrow(a1), 1)	
   colnames(sentence1) = c("ser_num", "text")	
   for (i1 in 1:nrow(a1)){
 
@@ -99,10 +99,12 @@ sentence = reactive({
 
         # sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
 	
-	sentence1[i1, 1] = str_c(chunk_collect[[i1]], collapse=" ")	} # i1 loop ends
+	#sentence1[i1, 1] = str_c(chunk_collect[[i1]], collapse=" ")	
+  
+         } # i1 loop ends
 
   # sentence2 = sapply(sentence1, combine)
-  sentence = data.frame(sentence1) # data_frame("text")
+  sentence = data.frame(chunk_collect) # data_frame("text")
   # for (i2 in 1:length(sentence1)){sentence[i2,1] = sentence1[[i2]]}
   # sentence = as.character(sentence)	
   return(sentence)
