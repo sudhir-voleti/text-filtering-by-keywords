@@ -91,7 +91,7 @@ sentence = reactive({
   chunk_collect = data_frame(word = rep("a", nrow(a1)))
   # sentence1 = vector("list", nrow(a1))
   # sentence1 = matrix(0, nrow(a1), 1)	
-  colnames(sentence1) = c("ser_num", "text")	
+  # colnames(sentence1) = c("ser_num", "text")	
   for (i1 in 1:nrow(a1)){
 
 	chunk_collect[i1, 1] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
