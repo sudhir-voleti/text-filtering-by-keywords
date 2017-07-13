@@ -35,13 +35,12 @@ half_winsize <- reactive({
 
 sentence = reactive({
 
-  #arbit_wl = arbit_wl()
-  #pred.an = text()
   wordlist = wordlist()	
   half_winsize = half_winsize()
   text = text()
+	
   text = gsub('<.*?>', "", text)   # drop html junk
-
+	
   # first replace all ngram spaces among keywords with underscores
   wordlist1 = gsub(" ", "_", wordlist); # wordlist1
   key_ngrams = setdiff(wordlist1, wordlist); # key_ngrams 
@@ -84,12 +83,10 @@ sentence = reactive({
 	select(row_key_start, row_key, row_key_stop)
 
   # Highlight target keywords, using sapply()
-  text_df1[text_df1$row_key %in% a1$row_key, 2] = sapply(text_df1[text_df1$row_key %in% a1$row_key, 2], function(x) {paste('**', x, '**')})
+  text_df1[text_df1$row_key %in% a1$row_key, 2] = sapply(text_df1[text_df1$row_key %in% a1$row_key, 2], 
+							 function(x) {paste('**', x, '**', sep="")})
 
   # extract chunks and de-duplicate
-  doc_levels = levels(as.factor(a1$doc))
-  num_docs = length(doc_levels)
-
   chunk_collect = vector("list", nrow(a1))
   sentence1 = vector("list", nrow(a1))
   for (i1 in 1:nrow(a1)){
