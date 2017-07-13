@@ -50,9 +50,9 @@ sentence = reactive({
   for (i1 in 1:length(key_ngrams)){ 
 	text = gsub(pattern_key[i1], key_ngrams[i1], text, ignore.case = TRUE) }
 
-  wordlist2 = wordlist1 %>% as.data.frame()
+  wordlist2 = wordlist1 %>% as.character() %>% as.data.frame() 
   colnames(wordlist2) = "word"
-  wordlist2$word = as.character(wordlist2$word) # exception handling
+  # wordlist2$word = as.character(wordlist2$word) # exception handling
 
   # now tokenize coprus into docs_words and ID relevant chunks
   names(text) = "text"
@@ -99,8 +99,7 @@ sentence = reactive({
 
         sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
 
-
-  sentence1[[10]]
+  # sentence1[[10]]
   return(sentence)
   })
 
