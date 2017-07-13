@@ -97,7 +97,7 @@ sentence = reactive({
         sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
 
   # sentence = sapply(sentence1, combine)
-  sentence = as.character(sentence1) # data_frame("text")
+  sentence = sentence1 # data_frame("text")
   # for (i2 in 1:length(sentence1)){sentence[i2,1] = sentence1[[i2]]}
   # sentence = as.character(sentence)	
   return(sentence)
