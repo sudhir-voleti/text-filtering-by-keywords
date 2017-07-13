@@ -26,9 +26,7 @@ shinyUI(fluidPage(
     textInput("keywords2",('Enter key words seperated by comma (,)'),value = ''),
    
     br(),    
-    numericInput("num", 
-                 label = h3("Num of Neighboring words"),
-                 value = 10),    
+    numericInput("num", label = h3("Num of Neighboring words"), value = 10),    
     
   ),
   
