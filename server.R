@@ -87,24 +87,25 @@ sentence = reactive({
 							 function(x) {paste('**', x, '**', sep="")})
 
   # extract chunks and de-duplicate
-  # chunk_collect = vector("list", nrow(a1))
-  chunk_collect = data_frame(word = rep("a", nrow(a1)))
-  # sentence1 = vector("list", nrow(a1))
+  chunk_collect = vector("list", nrow(a1))
+  #chunk_collect = data_frame(word = rep("a", nrow(a1)))
+  sentence1 = vector("list", nrow(a1))
   # sentence1 = matrix(0, nrow(a1), 1)	
   # colnames(sentence1) = c("ser_num", "text")	
   for (i1 in 1:nrow(a1)){
 
-	chunk_collect[i1, 1] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
-				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word) %>% as.character()
+	chunk_collect[[i1]] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
+				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word) #%>% as.character()
+	                        collapse = " ")
 
-        # sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
+         sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]$word), collapse=" ")	} # i1 loop ends
 	
 	#sentence1[i1, 1] = str_c(chunk_collect[[i1]], collapse=" ")	
   
-         } # i1 loop ends
+        } # i1 loop ends
 
   # sentence2 = sapply(sentence1, combine)
-  sentence = data.frame(chunk_collect) # data_frame("text")
+  sentence = data.frame(text = unlist(chunk_collect)) # data_frame("text")
   # for (i2 in 1:length(sentence1)){sentence[i2,1] = sentence1[[i2]]}
   # sentence = as.character(sentence)	
   return(sentence)
