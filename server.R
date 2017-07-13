@@ -88,7 +88,7 @@ sentence = reactive({
 
   # extract chunks and de-duplicate
   # chunk_collect = vector("list", nrow(a1))
-  chunk_collect = data_frame(word = rep("a", nrow(a1))
+  chunk_collect = data_frame(word = rep("a", nrow(a1)))
   # sentence1 = vector("list", nrow(a1))
   sentence1 = matrix(0, nrow(a1), 2)	
   colnames(sentence1) = c("ser_num", "text")	
