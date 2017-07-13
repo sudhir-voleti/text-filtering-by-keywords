@@ -18,8 +18,17 @@ shinyUI(fluidPage(
     
     fileInput("file", "Upload text file"),
     fileInput("keywords", "Upload Key words text file"),
-    tags$b("And/Or"),br(),br(),
+    
+    br(), 
+    tags$b("And/Or"),
+   
+    br(),
     textInput("keywords2",('Enter key words seperated by comma (,)'),value = '')
+   
+    br(),    
+    numericInput("num", 
+                 label = h3("Num of Neighboring words"),
+                 value = 10),    
     
   ),
   
