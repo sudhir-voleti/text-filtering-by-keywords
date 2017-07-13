@@ -87,13 +87,14 @@ sentence = reactive({
 							 function(x) {paste('**', x, '**', sep="")})
 
   # extract chunks and de-duplicate
-  chunk_collect = vector("list", nrow(a1))
+  # chunk_collect = vector("list", nrow(a1))
+  chunk_collect = data_frame(word = rep("a", nrow(a1))
   # sentence1 = vector("list", nrow(a1))
   sentence1 = matrix(0, nrow(a1), 2)	
   colnames(sentence1) = c("ser_num", "text")	
   for (i1 in 1:nrow(a1)){
 
-	chunk_collect[[i1]] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
+	chunk_collect[i1, 1] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
 				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word) %>% as.character()
 
         # sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
