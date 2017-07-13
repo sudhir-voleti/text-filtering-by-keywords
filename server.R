@@ -23,28 +23,30 @@ wordlist <- reactive({
   return(key)
 })  
 
-arbit_wl = reactive({
-  arbit_wl = wordlist() %>% data_frame()
-  colnames(arbit_wl) = "word"
-  arbit_wl  
-})
+#arbit_wl = reactive({
+#  arbit_wl = wordlist() %>% data_frame()
+#  colnames(arbit_wl) = "word"
+#  arbit_wl  
+# })
   
 half_winsize <- reactive({
-	return(input$num)
+	return(input$num) 
 })  
 
 sentence = reactive({
 
-  arbit_wl = arbit_wl()
-  pred.an = text()
+  #arbit_wl = arbit_wl()
+  #pred.an = text()
+  wordlist = wordlist()	
   half_winsize = half_winsize()
-
+  text = text()
   text = gsub('<.*?>', "", text)   # drop html junk
 
   # first replace all ngram spaces among keywords with underscores
-  wordlist1 = gsub(" ", "_", wordlist); wordlist1
-  key_ngrams = setdiff(wordlist1, wordlist); key_ngrams 
-  pattern_key = gsub("_", " ", key_ngrams); pattern_key
+  wordlist1 = gsub(" ", "_", wordlist); # wordlist1
+  key_ngrams = setdiff(wordlist1, wordlist); # key_ngrams 
+  pattern_key = gsub("_", " ", key_ngrams); # pattern_key
+	
   for (i1 in 1:length(key_ngrams)){ 
 	text = gsub(pattern_key[i1], key_ngrams[i1], text, ignore.case = TRUE) }
 
@@ -69,14 +71,11 @@ sentence = reactive({
 		# build primary key on rows
 		mutate(row_key = doc*1000 + 0.01*word_ind) %>% ungroup()
 	
-  text_df1
-
   # find extraction keywords
   target_words = text_df1 %>% inner_join(wordlist2, by = "word") %>% 
 			mutate(start1 = word_ind - half_winsize) %>%
 			mutate(stop1 = word_ind + half_winsize) #%>%		
-  target_words 
-
+  
   # find extraction cutpoints
   a1  = target_words %>% mutate(start = ifelse(start1 < 1, docmin, start1)) %>% 
 	mutate(stop = ifelse(stop1 > docmax, docmax, stop1)) %>%
