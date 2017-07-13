@@ -21,51 +21,90 @@ wordlist <- reactive({
   }
   key = setdiff(unique(c(key1,key2)),"")
   return(key)
-})
-
+})  
 
 arbit_wl = reactive({
   arbit_wl = wordlist() %>% data_frame()
   colnames(arbit_wl) = "word"
-  arbit_wl
-  
+  arbit_wl  
 })
-
+  
+half_winsize <- reactive({
+	return(input$num)
+})  
 
 sentence = reactive({
+
   arbit_wl = arbit_wl()
   pred.an = text()
-  pred.an1 = pred.an[(pred.an != "")] %>% data_frame()
-  colnames(pred.an1)= "text"
+  half_winsize = half_winsize()
 
-  pred.an2 = pred.an1 %>% unnest_tokens(sentence, text, token = "sentences")
+  text = gsub('<.*?>', "", text)   # drop html junk
 
-  a0 = pred.an2 %>%
+  # first replace all ngram spaces among keywords with underscores
+  wordlist1 = gsub(" ", "_", wordlist); wordlist1
+  key_ngrams = setdiff(wordlist1, wordlist); key_ngrams 
+  pattern_key = gsub("_", " ", key_ngrams); pattern_key
+  for (i1 in 1:length(key_ngrams)){ 
+	text = gsub(pattern_key[i1], key_ngrams[i1], text, ignore.case = TRUE) }
 
-    # setup a sentence index for later reference
-    mutate(sent1 = seq(1:nrow(pred.an2))) %>% dplyr::select(sent1, sentence) %>%
+  wordlist2 = wordlist1 %>% as.data.frame()
+  colnames(wordlist2) = "word"
+  wordlist2$word = as.character(wordlist2$word) # exception handling
 
-    # tokenize words in each sentence usng group_by
-    group_by(sentence) %>% unnest_tokens(word, sentence) %>% ungroup() %>%
+  # now tokenize coprus into docs_words and ID relevant chunks
+  names(text) = "text"
+  text_df = text %>% as.data.frame() %>% mutate(doc = seq(1:length(text))); 
+  text_df$text1 =  as.character(text_df$.) 
+  text_df = text_df %>% select(doc, text1)
 
-    # now merge wordlists
-    inner_join(arbit_wl, by = "word") %>%
+  # prep corpus for extraction op
+  text_df1 = text_df %>% unnest_tokens(word, text1, token = "words") %>% 
 
-    # de-duplicate sentence index
-    dplyr::select(sent1) %>% unique()
+   		# building various indices
+		mutate(word1 = 1) %>% group_by(doc) %>%  
+		mutate(word_ind = seq(1:sum(word1))) %>% select(-word1) %>%
+		mutate(docmin = 1) %>% mutate(docmax = as.numeric(max(word_ind))) %>%
 
-  # filter corpus based on sentence list
-  pred.an3 = pred.an2 %>%
-    # sentence index construction
-    mutate(sent1 = seq(1:nrow(pred.an2))) %>% dplyr::select(sent1, sentence) %>%
+		# build primary key on rows
+		mutate(row_key = doc*1000 + 0.01*word_ind) %>% ungroup()
+	
+  text_df1
 
-    # inner join and retain selected sents only
-    inner_join(a0, by = "sent1") %>% dplyr::select(sentence, sent1)
+  # find extraction keywords
+  target_words = text_df1 %>% inner_join(wordlist2, by = "word") %>% 
+			mutate(start1 = word_ind - half_winsize) %>%
+			mutate(stop1 = word_ind + half_winsize) #%>%		
+  target_words 
 
-  pred.an3 = data.frame(pred.an3)
-  sentence = pred.an3$sentence
+  # find extraction cutpoints
+  a1  = target_words %>% mutate(start = ifelse(start1 < 1, docmin, start1)) %>% 
+	mutate(stop = ifelse(stop1 > docmax, docmax, stop1)) %>%
+	mutate(row_key_start = doc*1000 + 0.01*start) %>%
+	mutate(row_key_stop  = doc*1000 + 0.01*stop) %>%
+	select(row_key_start, row_key, row_key_stop)
+
+  # Highlight target keywords, using sapply()
+  text_df1[text_df1$row_key %in% a1$row_key, 2] = sapply(text_df1[text_df1$row_key %in% a1$row_key, 2], function(x) {paste('**', x, '**')})
+
+  # extract chunks and de-duplicate
+  doc_levels = levels(as.factor(a1$doc))
+  num_docs = length(doc_levels)
+
+  chunk_collect = vector("list", nrow(a1))
+  sentence1 = vector("list", nrow(a1))
+  for (i1 in 1:nrow(a1)){
+
+	chunk_collect[[i1]] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
+				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word)
+
+        sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
+
+
+  sentence1[[10]]
   return(sentence)
   })
+
 
 output$filter_corp = renderPrint({
 cat("Total ", length(sentence())," sentences.\n")
