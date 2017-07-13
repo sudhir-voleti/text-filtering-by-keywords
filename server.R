@@ -96,8 +96,8 @@ sentence = reactive({
 
         sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
 
-  sentence = unlist(sentence1)
-  sentence = as.character(sentence)	
+  sentence = sapply(sentence1, combine)
+  # sentence = as.character(sentence)	
   return(sentence)
   })
 
