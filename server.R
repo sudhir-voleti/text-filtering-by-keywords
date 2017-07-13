@@ -92,7 +92,7 @@ sentence = reactive({
   for (i1 in 1:nrow(a1)){
 
 	chunk_collect[[i1]] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
-				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word)
+				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word) %>% as.character()
 
         sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]), collapse=" ")	} # i1 loop ends
 
