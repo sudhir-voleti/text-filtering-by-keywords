@@ -32,8 +32,7 @@ sentence = reactive({
   wordlist = wordlist()	
   half_winsize = half_winsize()
   text = text()
-  require(stringr)  	
-	
+  	
   text = gsub('<.*?>', "", text)   # drop html junk	
   # first replace all ngram spaces among keywords with underscores
   wordlist1 = gsub(" ", "_", wordlist); # wordlist1
@@ -97,7 +96,7 @@ sentence = reactive({
 
 output$filter_corp = renderPrint({
 cat("Showing upto 20 of Total ", length(sentence())," sentences.\n")
-sentence[1:20,]
+sentence()[1:20,]
 })
 
 output$downloadData1 <- downloadHandler(
