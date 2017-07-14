@@ -23,12 +23,6 @@ wordlist <- reactive({
   return(key)
 })  
 
-#arbit_wl = reactive({
-#  arbit_wl = wordlist() %>% data_frame()
-#  colnames(arbit_wl) = "word"
-#  arbit_wl  
-# })
-  
 half_winsize <- reactive({
 	return(input$num) 
 })  
@@ -51,9 +45,8 @@ sentence = reactive({
 
   wordlist2 = wordlist1 %>% as.character() %>% as.data.frame() 
   colnames(wordlist2) = "word"
-  # wordlist2$word = as.character(wordlist2$word) # exception handling
-
-  # now tokenize coprus into docs_words and ID relevant chunks
+  
+  # now tokenize coprus into docs_words
   names(text) = "text"
   text_df = text %>% as.data.frame() %>% mutate(doc = seq(1:length(text))); 
   text_df$text1 =  as.character(text_df$.) 
@@ -97,10 +90,7 @@ sentence = reactive({
          sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]$word), collapse=" ")	
                           } # i1 loop ends
 
-  # sentence2 = sapply(sentence1, combine)
-  sentence = data.frame(text = unlist(chunk_collect)) # data_frame("text")
-  # for (i2 in 1:length(sentence1)){sentence[i2,1] = sentence1[[i2]]}
-  # sentence = as.character(sentence)	
+  sentence = data.frame(text = unlist(sentence1)) # data_frame("text")
   return(sentence)
   })
 
