@@ -96,8 +96,8 @@ sentence = reactive({
 
 
 output$filter_corp = renderPrint({
-cat("Total ", length(sentence())," sentences.\n")
-cat(as.String(paste0(1:length(sentence())," -> ", sentence())))
+cat("Showing upto 20 of Total ", length(sentence())," sentences.\n")
+sentence$text[1:20]
 })
 
 output$downloadData1 <- downloadHandler(
