@@ -27,12 +27,11 @@ half_winsize <- reactive({
 	return(input$num) 
 })  
 
-sentence = reactive({
+text_df1 = reactive({
 
   wordlist = wordlist()	
-  half_winsize = half_winsize()
   text = text()
-  	
+
   text = gsub('<.*?>', "", text)   # drop html junk	
   # first replace all ngram spaces among keywords with underscores
   wordlist1 = gsub(" ", "_", wordlist); # wordlist1
@@ -61,27 +60,50 @@ sentence = reactive({
 
 		# build primary key on rows
 		mutate(row_key = doc*1000 + 0.01*word_ind) %>% ungroup()
+
+   return(text_df1)
+   })
+
+ target_words = reactive({
+
+  text_df1 = text_df1()
+  wordlist = wordlist()
+  half_winsize = half_winsize()
+
+  # first replace all ngram spaces among keywords with underscores
+  wordlist1 = gsub(" ", "_", wordlist); # wordlist1
+  wordlist2 = wordlist1 %>% as.character() %>% as.data.frame() 
+  colnames(wordlist2) = "word"  
 	
   # find extraction keywords
   target_words = text_df1 %>% inner_join(wordlist2, by = "word") %>% 
 			mutate(start1 = word_ind - half_winsize) %>%
-			mutate(stop1 = word_ind + half_winsize) #%>%		
-  
-  # find extraction cutpoints
-  a1  = target_words %>% mutate(start = ifelse(start1 < 1, docmin, start1)) %>% 
+			mutate(stop1 = word_ind + half_winsize)
+
+   return(target_words)
+
+ 	})
+
+   sentence = reactive({
+
+    target_words = target_words()
+    text_df1 = text_df1()
+	
+	 # find extraction cutpoints
+    a1  = target_words %>% mutate(start = ifelse(start1 < 1, docmin, start1)) %>% 
 	mutate(stop = ifelse(stop1 > docmax, docmax, stop1)) %>%
 	mutate(row_key_start = doc*1000 + 0.01*start) %>%
 	mutate(row_key_stop  = doc*1000 + 0.01*stop) %>%
 	select(row_key_start, row_key, row_key_stop)
 
-  # Highlight target keywords, using sapply()
-  text_df1[text_df1$row_key %in% a1$row_key, 2] = sapply(text_df1[text_df1$row_key %in% a1$row_key, 2], 
+    # Highlight target keywords, using sapply()
+    text_df1[text_df1$row_key %in% a1$row_key, 2] = sapply(text_df1[text_df1$row_key %in% a1$row_key, 2], 
 							 function(x) {paste('**', x, '**', sep="")})
 
-  # extract chunks and de-duplicate
-  chunk_collect = vector("list", nrow(a1))
-  sentence1 = vector("list", nrow(a1))
-  for (i1 in 1:nrow(a1)){
+    # extract chunks and de-duplicate
+    chunk_collect = vector("list", nrow(a1))
+    sentence1 = vector("list", nrow(a1))
+    for (i1 in 1:nrow(a1)){
 
 	chunk_collect[[i1]] = text_df1 %>% filter(text_df1$row_key >= a1$row_key_start[i1],
 				text_df1$row_key <= a1$row_key_stop[i1]) %>% select(word) #%>% as.character()
@@ -89,11 +111,10 @@ sentence = reactive({
          sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]$word), collapse=" ")	
                           } # i1 loop ends
 
-  sentence = data_frame(text = unlist(sentence1)) # data_frame("text")
-  return(sentence)
-  })
-
-
+    sentence = data_frame(text = unlist(sentence1)) # data_frame("text")
+    return(sentence)
+	  })
+	
 output$filter_corp = renderPrint({
 cat("Showing upto 20 of Total ", length(sentence())," sentences.\n")
 sentence()[1:20,]
@@ -114,12 +135,39 @@ output$downloadData2 <- downloadHandler(
   }
 )
 
+ # histogram of keyword freq in corpus
+ output$bar_plot <- renderPlot({
+ wrd_disp = min(20, nrow(target_words))
+ target_words %>% count(word, sort = TRUE) %>% top_n(wrd_disp) %>%
+		  mutate(word = reorder(word, n)) %>%  # mutate() reorders columns & renames too
 
-output$downloadData3 <- downloadHandler(
+  ggplot(aes(word, n)) +
+  geom_bar(stat = "identity") +
+  xlab(NULL) +
+  coord_flip()
+
+	})
+
+ # distbn of keywords across the corpus
+ output$line_plot <- renderPlot({
+
+  target_words %>% group_by(doc) %>% count(word) %>%
+        summarise(keywrds = sum(n)) %>%
+
+  ggplot(aes(doc, keywrds)) +
+  geom_line(col = "blue") +
+  geom_point(col = "black") +
+  ggtitle("Distribution of wordlist's Keywords across the corpus",
+          "(ie total num of occurrences of all keywords in each doc)") +
+  labs(x = "Doc_number in Corpus", y = "Num of Keywords occurring per doc")
+
+	})
+
+  output$downloadData3 <- downloadHandler(
   filename = function() { "Filtered_corpus.txt" },
   content = function(file) {
-    writeLines(sentence(), file)
-  }
+    writeLines(sentence(), file)	}
+  		
 )
 
 })
