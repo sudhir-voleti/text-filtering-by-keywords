@@ -116,7 +116,7 @@ text_df1 = reactive({
 	  })
 	
 output$filter_corp = renderPrint({
-cat("Showing upto 20 of Total ", length(sentence())," sentences.\n")
+cat("Showing upto 20 of Total ", nrow(sentence())," sentences.\n")
 sentence()[1:20,]
 })
 
@@ -137,6 +137,7 @@ output$downloadData2 <- downloadHandler(
 
  # histogram of keyword freq in corpus
  output$bar_plot <- renderPlot({
+ target_words = target_words()	 
  wrd_disp = min(20, nrow(target_words))
  target_words %>% count(word, sort = TRUE) %>% top_n(wrd_disp) %>%
 		  mutate(word = reorder(word, n)) %>%  # mutate() reorders columns & renames too
@@ -150,7 +151,7 @@ output$downloadData2 <- downloadHandler(
 
  # distbn of keywords across the corpus
  output$line_plot <- renderPlot({
-
+  target_words = target_words()
   target_words %>% group_by(doc) %>% count(word) %>%
         summarise(keywrds = sum(n)) %>%
 
