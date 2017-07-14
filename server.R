@@ -90,7 +90,7 @@ sentence = reactive({
          sentence1[[i1]] = paste(unlist(chunk_collect[[i1]]$word), collapse=" ")	
                           } # i1 loop ends
 
-  sentence = data.frame(text = unlist(sentence1)) # data_frame("text")
+  sentence = data_frame(text = unlist(sentence1)) # data_frame("text")
   return(sentence)
   })
 
