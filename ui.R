@@ -7,6 +7,7 @@ library(NLP)
 library(magrittr)
 library(tidytext)
 library(dplyr)
+library(ggplot2)
 
 
 shinyUI(fluidPage(
@@ -53,9 +54,9 @@ shinyUI(fluidPage(
                           p(" Note: You can download the sample files from the 'Example dataset' tab and see how the app works. Also you can enter the keywords in left side bar panel. If you are 
                            entering keywords in the left side bar panel, than each key word should be separated by comma (,) 
                            without any space.", align = "justify")
-                         )
-                ,
-    
+                         ),
+                    
+                
                 tabPanel("Example dataset", 
                          
                          h4(p("Download Sample text file")), 
@@ -69,13 +70,26 @@ shinyUI(fluidPage(
                          p("Please note that download will not work with RStudio interface. Download will work only in web-browsers. So open this app in a web-browser and then download the example file. For opening this app in web-browser click on \"Open in Browser\" as shown below -"),
                          img(src = "example1.png")),
     
+                    
     
                 tabPanel("Filtered Corpus",
+                         
                          h4(p("Download Filtered Corpus text file")), 
                          downloadButton('downloadData3', 'Download Filtered Corpus text file'),
                          br(),
                          br(),
-                         verbatimTextOutput("filter_corp"))
+                         verbatimTextOutput("filter_corp")),
+                    
+                    
+                tabPanel("Keyword Distributions",
+                         
+                         h4(p("How are the keywords distributed across docs in the corpus?")), 
+                         plotOutput("line_plot", height = 700, width = 700),
+			                   br(),
+			                   br(),
+                         h4(p("Histogram of keyword occurrences from the corpus")), 
+                         plotOutput("bar_plot", height = 700, width = 700)    
+                        )
                 )
            )
        )
