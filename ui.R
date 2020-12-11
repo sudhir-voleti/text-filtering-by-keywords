@@ -12,7 +12,8 @@ library(ggplot2)
 
 shinyUI(fluidPage(
   
- titlePanel("Text Filtering by Keywords"),
+ #titlePanel("Text Filtering by Keywords"),
+ titlePanel(title=div(img(src="logo.png",align='right'),"Text Filtering by Keywords")),
   
   # Input in sidepanel:
   sidebarPanel(
